@@ -36,3 +36,39 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#countries {
+  height: 40px;
+  font-size: large;
+  width: 50%;
+  outline: none;
+  border: 1.5px solid #282c34;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  margin-bottom: 2%;
+}
+
+
+.loader {
+  /* position: absolute;
+  top:40%;
+  left: 45%;   */
+  margin: auto;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #212529;;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 0.5s linear infinite; /* Safari */
+  animation: spin 0.5s linear infinite;
+}
+
+.hide{
+  display:none;
+}
