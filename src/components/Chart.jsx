@@ -45,7 +45,7 @@ function Chart({ countryData: { confirmed, recovered, deaths, date } }) {
 
     return (
         <div className='container' >
-            <Bar data={data} options={options} />
+            {confirmed && <Bar data={data} options={options} />}
         </div>
     )
 }

@@ -3,11 +3,12 @@ import "./App.css";
 import Cards from "./components/Cards";
 import CountriesList from "./components/CountriesList";
 import Chart from "./components/Chart";
+import coronavirus from "./imgs/coronavirus.png";
 
 const App = () => {
-  const [countryData, setCountryData] = useState({});
-  const [countryList, setCountryList] = useState([]);
-  const [initialLoad, setInitialLoad] = useState(false);
+  const [selectedCountryData, setSelectedCountryData] = useState({});
+  const [countryNames, setCountryNames] = useState([]);
+  const [initialized, setInitialized] = useState(false);
   const [loadCountry, setLoadCountry] = useState(false);
 
   const onCountryChange = (value) => {
@@ -19,17 +20,23 @@ const App = () => {
     )
       .then((resp) => resp.json())
       .then((data) => {
-        if (Object.keys(data).length !== 1) {
-          setCountryData({
-            confirmed: data.confirmed.value,
-            recovered: data.recovered.value,
-            deaths: data.deaths.value,
-            date: data.lastUpdate,
-          });
-          setLoadCountry(false);
-        } else {
+        setLoadCountry(false);
+        if (data["error"]) {
           alert(data.error.message);
+          setSelectedCountryData({
+            confirmed: undefined,
+            recovered: undefined,
+            deaths: undefined,
+            date: undefined,
+          });
+          return;
         }
+        setSelectedCountryData({
+          confirmed: data.confirmed.value,
+          recovered: data.recovered.value,
+          deaths: data.deaths.value,
+          date: data.lastUpdate,
+        });
       })
       .catch((e) => {
         alert(e);
@@ -44,14 +51,18 @@ const App = () => {
       ),
     ])
       .then((data) => {
-        setCountryData({
+        setInitialized(true);
+        if (data["error"]) {
+          alert(data.error.message);
+          return;
+        }
+        setSelectedCountryData({
           confirmed: data[0].confirmed.value,
           recovered: data[0].recovered.value,
           deaths: data[0].deaths.value,
           date: data[0].lastUpdate,
         });
-        setCountryList(data[1].countries);
-        setInitialLoad(true);
+        setCountryNames(data[1].countries);
       })
       .catch(() => {
         alert("Oops! Something Went Wrong!🤔");
@@ -59,20 +70,27 @@ const App = () => {
   }, []);
 
   return (
-    <div className="App ">
-      <div className="container bg-dark text-info my-3 rounded">
-        <p className="text-uppercase fs-2"> Covid-19 Info</p>
+    <div className="App container">
+      <div className="container bg-dark my-3 rounded">
+        <h1 className="py-3 fw-bold text-info">
+          <img
+            src={coronavirus}
+            className="bg-dark border-0 corona-logo"
+            alt="logo"
+          />
+          &nbsp;COVID-19 INFO
+        </h1>
       </div>
-      <div className={`loader ${initialLoad ? "hide" : ""}`}></div>
-      {initialLoad ? (
+      <div className={`loader ${initialized ? "hide" : ""}`}></div>
+      {initialized ? (
         <>
-          <Cards countryData={countryData} />
+          <Cards countryData={selectedCountryData} />
           <CountriesList
-            countryList={countryList}
+            countryList={countryNames}
             onCountryChange={onCountryChange}
           />
           <div className={`loader ${loadCountry ? "" : "hide"}`}></div>
-          {!loadCountry ? <Chart countryData={countryData} /> : ""}
+          {!loadCountry ? <Chart countryData={selectedCountryData} /> : ""}
         </>
       ) : (
         ""
